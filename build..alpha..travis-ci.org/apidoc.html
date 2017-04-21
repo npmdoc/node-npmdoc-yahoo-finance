@@ -1,0 +1,479 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/pilwon/node-yahoo-finance"
+
+    >yahoo-finance (v0.2.16)</a>
+</h1>
+<h4>Yahoo Finance historical quotes and snapshot data downloader written in Node.js</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.yahoo-finance">module yahoo-finance</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.historical">
+            function <span class="apidocSignatureSpan">yahoo-finance.</span>historical
+            <span class="apidocSignatureSpan">(options, optionalHttpRequestOptions, cb)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.snapshot">
+            function <span class="apidocSignatureSpan">yahoo-finance.</span>snapshot
+            <span class="apidocSignatureSpan">(options, optionalHttpRequestOptions, cb)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">yahoo-finance.</span>utils</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.yahoo-finance.utils">module yahoo-finance.utils</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.utils.camelize">
+            function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>camelize
+            <span class="apidocSignatureSpan">(text)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.utils.download">
+            function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>download
+            <span class="apidocSignatureSpan">(uri, qs, optionalHttpRequestOptions)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.utils.parseCSV">
+            function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>parseCSV
+            <span class="apidocSignatureSpan">(text)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.utils.toDate">
+            function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>toDate
+            <span class="apidocSignatureSpan">(value, valueForError)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.utils.toFloat">
+            function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>toFloat
+            <span class="apidocSignatureSpan">(value, valueForNaN)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.yahoo-finance.utils.toInt">
+            function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>toInt
+            <span class="apidocSignatureSpan">(value, valueForNaN)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.yahoo-finance" id="apidoc.module.yahoo-finance">module yahoo-finance</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.historical" id="apidoc.element.yahoo-finance.historical">
+        function <span class="apidocSignatureSpan">yahoo-finance.</span>historical
+        <span class="apidocSignatureSpan">(options, optionalHttpRequestOptions, cb)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function historical(options, optionalHttpRequestOptions, cb) {
+  options = _.clone(options);
+  _sanitizeHistoricalOptions(options);
+  var symbols = options.symbols || _.flatten([options.symbol]);
+
+  if(optionalHttpRequestOptions &#x26;&#x26; typeof optionalHttpRequestOptions === &#x27;function&#x27;) {
+    cb = optionalHttpRequestOptions;
+    optionalHttpRequestOptions = undefined;
+  }
+
+  return Promise.map(symbols, function (symbol) {
+    return _utils.download(_constants.HISTORICAL_URL, {
+      s: symbol,
+      a: options.from.format(&#x27;MM&#x27;) - 1,
+      b: options.from.format(&#x27;DD&#x27;),
+      c: options.from.format(&#x27;YYYY&#x27;),
+      d: options.to.format(&#x27;MM&#x27;) - 1,
+      e: options.to.format(&#x27;DD&#x27;),
+      f: options.to.format(&#x27;YYYY&#x27;),
+      g: options.period,
+      ignore: &#x27;.csv&#x27;
+    }, optionalHttpRequestOptions)
+    .then(_utils.parseCSV)
+    .then(function (data) {
+      return _transformHistorical(symbol, data);
+    })
+    .catch(function (err) {
+      if (options.error) {
+        throw err;
+      } else {
+        return [];
+      }
+    });
+  }, {concurrency: options.maxConcurrentSymbols || os.cpus().length})
+  .then(function (result) {
+    if (options.symbols) {
+      return _.zipObject(symbols, result);
+    } else {
+      return result[0];
+    }
+  })
+  .catch(function (err) {
+    throw new Error(util.format(&#x27;Failed to download data (%s)&#x27;, err.message));
+  })
+  .nodeify(cb);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+
+## Usage
+
+```js
+var yahooFinance = require(&#x27;yahoo-finance&#x27;);
+
+yahooFinance.<span class="apidocCodeKeywordSpan">historical</span>({
+  symbol: &#x27;AAPL&#x27;,
+  from: &#x27;2012-01-01&#x27;,
+  to: &#x27;2012-12-31&#x27;,
+  // period: &#x27;d&#x27;  // &#x27;d&#x27; (daily), &#x27;w&#x27; (weekly), &#x27;m&#x27; (monthly), &#x27;v&#x27; (dividends
+only)
+}, function (err, quotes) {
+  //...
+});
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.snapshot" id="apidoc.element.yahoo-finance.snapshot">
+        function <span class="apidocSignatureSpan">yahoo-finance.</span>snapshot
+        <span class="apidocSignatureSpan">(options, optionalHttpRequestOptions, cb)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function snapshot(options, optionalHttpRequestOptions, cb) {
+  var symbols = options.symbols || _.flatten([options.symbol]);
+  options = _.clone(options);
+  _sanitizeSnapshotOptions(options);
+
+  if(optionalHttpRequestOptions &#x26;&#x26; typeof optionalHttpRequestOptions == &#x27;function&#x27;) {
+    cb = optionalHttpRequestOptions;
+    optionalHttpRequestOptions = undefined;
+  }
+
+  return _utils.download(_constants.SNAPSHOT_URL, {
+      s: symbols.join(&#x27;,&#x27;),
+      f: options.fields.join(&#x27;&#x27;)
+    }, optionalHttpRequestOptions)
+    .then(_utils.parseCSV)
+    .then(function (data) {
+      return _transformSnapshot(options.fields, symbols, data);
+    })
+    .then(function (results) {
+      if (options.symbols) {
+        return _(symbols)
+          .zipObject(results)
+          .filter(function (result) {
+            return _.isPlainObject(result);
+          })
+          .value();
+      } else if (_.isPlainObject(results[0])) {
+        return results[0];
+      } else {
+        throw new Error(results[0]);
+      }
+    })
+    .catch(function (err) {
+      throw new Error(util.format(&#x27;Failed to download data (%s)&#x27;, err.message));
+    })
+    .nodeify(cb);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  from: &#x27;2012-01-01&#x27;,
+  to: &#x27;2012-12-31&#x27;,
+  // period: &#x27;d&#x27;  // &#x27;d&#x27; (daily), &#x27;w&#x27; (weekly), &#x27;m&#x27; (monthly), &#x27;v&#x27; (dividends
+only)
+}, function (err, quotes) {
+  //...
+});
+
+yahooFinance.<span class="apidocCodeKeywordSpan">snapshot</span>({
+  symbol: &#x27;AAPL&#x27;,
+  fields: [&#x27;s&#x27;, &#x27;n&#x27;, &#x27;d1&#x27;, &#x27;l1&#x27;, &#x27;y&#x27;, &#x27;r&#x27;],
+}, function (err, snapshot) {
+  //...
+});
+```
+...</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.yahoo-finance.utils" id="apidoc.module.yahoo-finance.utils">module yahoo-finance.utils</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.utils.camelize" id="apidoc.element.yahoo-finance.utils.camelize">
+        function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>camelize
+        <span class="apidocSignatureSpan">(text)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function camelize(text) {
+  return S(text)
+    .slugify()
+    .camelize()
+    .s;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+var request = require(&#x27;request-promise&#x27;);
+var moment = require(&#x27;moment-timezone&#x27;);
+var dateFormats = [&#x27;YYYY-MM-DD&#x27;, &#x27;MM/DD/YYYY&#x27;];
+
+function camelize(text) {
+  return S(text)
+    .slugify()
+    .<span class="apidocCodeKeywordSpan">camelize</span>()
+    .s;
+}
+
+function download(uri, qs, optionalHttpRequestOptions) {
+  debug(url.format({pathname: uri, query: qs}));
+  return request(_.extend({uri: uri, qs: qs}, optionalHttpRequestOptions));
+}
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.utils.download" id="apidoc.element.yahoo-finance.utils.download">
+        function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>download
+        <span class="apidocSignatureSpan">(uri, qs, optionalHttpRequestOptions)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function download(uri, qs, optionalHttpRequestOptions) {
+  debug(url.format({pathname: uri, query: qs}));
+  return request(_.extend({uri: uri, qs: qs}, optionalHttpRequestOptions));
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.utils.parseCSV" id="apidoc.element.yahoo-finance.utils.parseCSV">
+        function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>parseCSV
+        <span class="apidocSignatureSpan">(text)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function parseCSV(text) {
+  return S(text).trim().s.split(&#x27;\n&#x27;).map(function (line) {
+    return S(line).trim().parseCSV();
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+function download(uri, qs, optionalHttpRequestOptions) {
+debug(url.format({pathname: uri, query: qs}));
+return request(_.extend({uri: uri, qs: qs}, optionalHttpRequestOptions));
+}
+
+function parseCSV(text) {
+return S(text).trim().s.split(&#x27;\n&#x27;).map(function (line) {
+  return S(line).trim().<span class="apidocCodeKeywordSpan">parseCSV</span>();
+});
+}
+
+function toDate(value, valueForError) {
+try {
+  var date = moment.tz(value, dateFormats, &#x27;America/New_York&#x27;).toDate();
+  if (date.getFullYear() &#x3c; 1400) { return null; }
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.utils.toDate" id="apidoc.element.yahoo-finance.utils.toDate">
+        function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>toDate
+        <span class="apidocSignatureSpan">(value, valueForError)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function toDate(value, valueForError) {
+  try {
+    var date = moment.tz(value, dateFormats, &#x27;America/New_York&#x27;).toDate();
+    if (date.getFullYear() &#x3c; 1400) { return null; }
+    return date;
+  } catch (err) {
+    if (_.isUndefined(valueForError)) {
+      return null;
+    } else {
+      return valueForError;
+    }
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+return S(text).trim().s.split(&#x27;\n&#x27;).map(function (line) {
+  return S(line).trim().parseCSV();
+});
+}
+
+function toDate(value, valueForError) {
+try {
+  var date = moment.tz(value, dateFormats, &#x27;America/New_York&#x27;).<span class="apidocCodeKeywordSpan">toDate</span>();
+  if (date.getFullYear() &#x3c; 1400) { return null; }
+  return date;
+} catch (err) {
+  if (_.isUndefined(valueForError)) {
+    return null;
+  } else {
+    return valueForError;
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.utils.toFloat" id="apidoc.element.yahoo-finance.utils.toFloat">
+        function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>toFloat
+        <span class="apidocSignatureSpan">(value, valueForNaN)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function toFloat(value, valueForNaN) {
+  var result = parseFloat(value);
+  if (isNaN(result)) {
+    if (_.isUndefined(valueForNaN)) {
+      return null;
+    } else {
+      return valueForNaN;
+    }
+  } else  {
+    return result;
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.yahoo-finance.utils.toInt" id="apidoc.element.yahoo-finance.utils.toInt">
+        function <span class="apidocSignatureSpan">yahoo-finance.utils.</span>toInt
+        <span class="apidocSignatureSpan">(value, valueForNaN)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function toInt(value, valueForNaN) {
+  var result = parseInt(value, 10);
+  if (isNaN(result)) {
+    if (_.isUndefined(valueForNaN)) {
+      return null;
+    } else {
+      return valueForNaN;
+    }
+  } else  {
+    return result;
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
